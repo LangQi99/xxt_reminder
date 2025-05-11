@@ -1,18 +1,16 @@
-package com.langqi.xxt_reminder;
+package com.langqi.xxt_reminder.network;
 
 import android.util.Log;
-
+import com.langqi.xxt_reminder.model.HomeworkInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import okhttp3.Call;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
@@ -21,17 +19,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class xxt {
+public class NetworkManager {
     private OkHttpClient client;
     private Map<String, List<Cookie>> cookieStore = new HashMap<>();
-    private String account;
-    private String password;
-    private boolean loginSuccess = false;
     private String cookieString = "";
+    private boolean loginSuccess = false;
 
-    public xxt(String account, String password) {
-        this.account = account;
-        this.password = password;
+    public NetworkManager() {
         client = new OkHttpClient.Builder()
                 .cookieJar(new CookieJar() {
                     @Override
@@ -56,17 +50,17 @@ public class xxt {
         void onHomeworkResult(List<HomeworkInfo> homeworkList);
     }
 
-    public void loginAsync(LoginCallback callback) {
+    public void loginAsync(String account, String password, LoginCallback callback) {
         new Thread(() -> {
-            boolean result = login();
+            boolean result = login(account, password);
             if (callback != null) {
                 callback.onLoginResult(result);
             }
         }).start();
     }
 
-    private boolean login() {
-        Log.d("xxt", "登录中");
+    private boolean login(String account, String password) {
+        Log.d("NetworkManager", "登录中");
         String url = "https://passport2-api.chaoxing.com/v11/loginregister?code=" + password
                 + "&cx_xxt_passport=json&uname=" + account + "&loginType=1&roleSelect=true";
         Request request = new Request.Builder()
@@ -78,10 +72,10 @@ public class xxt {
                 .build();
         try (Response response = client.newCall(request).execute()) {
             String body = response.body().string();
-            Log.d("xxt", body);
+            Log.d("NetworkManager", body);
             if (body.contains("验证通过")) {
                 loginSuccess = true;
-                Log.d("xxt", "初始化登录成功");
+                Log.d("NetworkManager", "初始化登录成功");
                 List<Cookie> cookies = cookieStore.get(HttpUrl.parse(url).host());
                 if (cookies != null) {
                     StringBuilder sb = new StringBuilder();
@@ -89,14 +83,14 @@ public class xxt {
                         sb.append(c.name()).append("=").append(c.value()).append(";");
                     }
                     cookieString = sb.toString();
-                    Log.d("xxt", "拼接后的Cookie: " + cookieString);
+                    Log.d("NetworkManager", "拼接后的Cookie: " + cookieString);
                 }
                 return true;
             }
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("xxt", "登录失败");
-            Log.d("xxt", e.getMessage());
+            Log.d("NetworkManager", "登录失败");
+            Log.d("NetworkManager", e.getMessage());
         }
         return false;
     }
@@ -173,24 +167,5 @@ public class xxt {
             result.add(new HomeworkInfo("", "", "获取作业失败", "", "", ""));
         }
         return result;
-    }
-
-    public static class HomeworkInfo {
-        public String subject;
-        public String homeworkName;
-        public String homeworkStatus;
-        public String url;
-        public String taskrefId;
-        public String deadline;
-
-        public HomeworkInfo(String subject, String homeworkName, String homeworkStatus, String url, String taskrefId,
-                String deadline) {
-            this.subject = subject;
-            this.homeworkName = homeworkName;
-            this.homeworkStatus = homeworkStatus;
-            this.url = url;
-            this.taskrefId = taskrefId;
-            this.deadline = deadline;
-        }
     }
 }
