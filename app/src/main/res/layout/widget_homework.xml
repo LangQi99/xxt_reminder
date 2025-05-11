@@ -6,69 +6,25 @@
     android:padding="12dp"
     android:background="@drawable/bg_homework_item">
 
-    <Button
+    <TextView
         android:id="@+id/btn_refresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="获取作业"
+        android:gravity="center"
+        android:background="@drawable/bg_button"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:padding="10dp"
         android:layout_marginBottom="8dp"/>
 
-    <LinearLayout
-        android:id="@+id/layout_homework"
+    <ListView
+        android:id="@+id/listViewHomework"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-        <ImageView
-            android:id="@+id/imageViewStatus"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="16dp"
-            android:contentDescription="状态图标"
-            android:src="@drawable/ic_check_circle_green_24dp" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textViewSubject"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="科目"
-                android:textStyle="bold"
-                android:textColor="#1976D2"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/textViewHomeworkName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="作业名"
-                android:textColor="#222222"
-                android:textSize="15sp"
-                android:layout_marginTop="2dp" />
-
-            <TextView
-                android:id="@+id/textViewStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="状态"
-                android:textColor="#388E3C"
-                android:textSize="14sp"
-                android:layout_marginTop="2dp" />
-
-            <TextView
-                android:id="@+id/textViewDeadline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="截止时间"
-                android:textColor="#D32F2F"
-                android:textSize="13sp"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-    </LinearLayout>
+        android:divider="@android:color/transparent"
+        android:dividerHeight="8dp"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"/>
 </LinearLayout> 

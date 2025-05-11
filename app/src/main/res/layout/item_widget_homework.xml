@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="4dp"
+    android:gravity="center_vertical"
+    android:background="@drawable/bg_homework_item">
+
+    <ImageView
+        android:id="@+id/imageViewStatus"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="状态图标" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textViewSubject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="科目"
+            android:textStyle="bold"
+            android:textColor="#1976D2"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/textViewHomeworkName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="作业名"
+            android:textColor="#222222"
+            android:textSize="12sp"
+            android:layout_marginTop="1dp" />
+
+        <TextView
+            android:id="@+id/textViewStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="状态"
+            android:textColor="#388E3C"
+            android:textSize="11sp"
+            android:layout_marginTop="1dp" />
+
+        <TextView
+            android:id="@+id/textViewDeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="截止时间"
+            android:textColor="#D32F2F"
+            android:textSize="10sp"
+            android:layout_marginTop="1dp" />
+    </LinearLayout>
+</LinearLayout> 
