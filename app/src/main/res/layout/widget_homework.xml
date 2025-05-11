@@ -1,0 +1,16 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content" android:padding="8dp">
+    <Button
+        android:id="@+id/btn_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="获取作业" />
+    <TextView
+        android:id="@+id/tv_homework"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="作业信息将在这里显示"
+        android:minHeight="100dp"
+        android:paddingTop="8dp"/>
+</LinearLayout> 
