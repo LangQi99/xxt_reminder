@@ -41,21 +41,33 @@ public class HomeworkWidgetProvider extends AppWidgetProvider {
     }
 
     private void fetchAndUpdateHomework(Context context, int appWidgetId) {
-        // 这里建议用SharedPreferences获取账号密码
         String account = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).getString("account", "");
         String password = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).getString("password", "");
         NetworkManager nm = new NetworkManager();
         nm.loginAndGetHomeworkAsync(account, password, homeworkList -> {
-            StringBuilder sb = new StringBuilder();
-            for (HomeworkInfo hw : homeworkList) {
-                sb.append(hw.subject).append(" | ").append(hw.homeworkName).append(" | ").append(hw.homeworkStatus);
-                if (hw.deadline != null && !hw.deadline.isEmpty()) {
-                    sb.append(" | 截止: ").append(hw.deadline);
-                }
-                sb.append("\n");
-            }
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_homework);
-            views.setTextViewText(R.id.tv_homework, sb.toString());
+            if (homeworkList == null || homeworkList.isEmpty()) {
+                views.setTextViewText(R.id.textViewSubject, "无作业");
+                views.setTextViewText(R.id.textViewHomeworkName, "");
+                views.setTextViewText(R.id.textViewStatus, "");
+                views.setTextViewText(R.id.textViewDeadline, "");
+                views.setImageViewResource(R.id.imageViewStatus, R.drawable.ic_check_circle_green_24dp);
+            } else {
+                HomeworkInfo hw = homeworkList.get(0);
+                views.setTextViewText(R.id.textViewSubject, hw.subject == null ? "" : hw.subject);
+                views.setTextViewText(R.id.textViewHomeworkName, hw.homeworkName == null ? "" : hw.homeworkName);
+                views.setTextViewText(R.id.textViewStatus, hw.homeworkStatus == null ? "" : hw.homeworkStatus);
+                if (hw.deadline != null && !hw.deadline.isEmpty()) {
+                    views.setTextViewText(R.id.textViewDeadline, "截止时间: " + hw.deadline);
+                } else {
+                    views.setTextViewText(R.id.textViewDeadline, "");
+                }
+                if (hw.submitted) {
+                    views.setImageViewResource(R.id.imageViewStatus, R.drawable.ic_check_circle_green_24dp);
+                } else {
+                    views.setImageViewResource(R.id.imageViewStatus, R.drawable.ic_error_red_24dp);
+                }
+            }
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
         });
     }
