@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">xxt_reminder</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="previous">Previous</string>
+
+    <string name="lorem_ipsum">
+        [empty]
+    </string>
+
+    <string name="account_hint">请输入账号</string>
+    <string name="password_hint">请输入密码</string>
+    <string name="login_button">登录</string>
+    <string name="view_homework_list">查看作业列表</string>
+</resources>
