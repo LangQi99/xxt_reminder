@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.langqi.xxt_reminder.databinding.FragmentFirstBinding;
 import com.langqi.xxt_reminder.model.HomeworkInfo;
 import com.langqi.xxt_reminder.network.NetworkManager;
+import android.content.Context;
+import android.content.SharedPreferences;
 
 public class FirstFragment extends Fragment {
 
@@ -54,6 +56,13 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // 自动填充账号和密码
+        SharedPreferences sp = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String lastAccount = sp.getString("account", "");
+        String lastPassword = sp.getString("password", "");
+        editTextAccount.setText(lastAccount);
+        editTextPassword.setText(lastPassword);
+
         buttonLogin.setOnClickListener(v -> {
             account = editTextAccount.getText().toString();
             password = editTextPassword.getText().toString();
@@ -61,6 +70,11 @@ public class FirstFragment extends Fragment {
                 Toast.makeText(getContext(), "账号和密码不能为空", Toast.LENGTH_SHORT).show();
                 return;
             }
+            // 保存账号和密码
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("account", account);
+            editor.putString("password", password);
+            editor.apply();
             networkManager = new NetworkManager();
             networkManager.loginAndGetHomeworkAsync(account, password, homeworkList -> {
                 List<HomeworkInfo> items = new ArrayList<>();
