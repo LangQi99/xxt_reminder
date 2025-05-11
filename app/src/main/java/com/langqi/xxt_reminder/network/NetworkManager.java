@@ -111,6 +111,7 @@ public class NetworkManager {
             return result;
         }
         String url = "https://mooc1-api.chaoxing.com/work/stu-work";
+        Log.d("Using Cookie", cookieString);
         Request request = new Request.Builder()
                 .url(url)
                 .header("User-Agent",
@@ -167,5 +168,24 @@ public class NetworkManager {
             result.add(new HomeworkInfo("", "", "获取作业失败", "", "", ""));
         }
         return result;
+    }
+
+    /**
+     * 新增：自动登录并获取作业列表，适用于JSESSION一次性场景
+     */
+    public void loginAndGetHomeworkAsync(String account, String password, HomeworkCallback callback) {
+        new Thread(() -> {
+            boolean loginResult = login(account, password);
+            List<HomeworkInfo> result;
+            if (loginResult) {
+                result = getAllHomeworkSimple();
+            } else {
+                result = new ArrayList<>();
+                result.add(new HomeworkInfo("", "", "登录失败", "", "", ""));
+            }
+            if (callback != null) {
+                callback.onHomeworkResult(result);
+            }
+        }).start();
     }
 }

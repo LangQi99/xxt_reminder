@@ -11,6 +11,6 @@
 
     <string name="account_hint">请输入账号</string>
     <string name="password_hint">请输入密码</string>
-    <string name="login_button">登录</string>
+    <string name="login_button">查看</string>
     <string name="view_homework_list">查看作业列表</string>
 </resources>

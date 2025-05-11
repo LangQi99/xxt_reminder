@@ -26,7 +26,7 @@ public class FirstFragment extends Fragment {
     private FragmentFirstBinding binding;
     private EditText editTextAccount;
     private EditText editTextPassword;
-    private Button buttonViewHomework;
+    private Button buttonLogin;
     private NetworkManager networkManager;
     private String account;
     private String password;
@@ -43,7 +43,7 @@ public class FirstFragment extends Fragment {
         View view = binding.getRoot();
         editTextAccount = view.findViewById(R.id.editTextAccount);
         editTextPassword = view.findViewById(R.id.editTextPassword);
-        buttonViewHomework = view.findViewById(R.id.button_view_homework);
+        buttonLogin = view.findViewById(R.id.button_login);
         recyclerViewHomework = view.findViewById(R.id.recyclerViewHomework);
         recyclerViewHomework.setLayoutManager(new LinearLayoutManager(getContext()));
         homeworkAdapter = new HomeworkAdapter(homeworkItemList);
@@ -54,7 +54,7 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        buttonViewHomework.setOnClickListener(v -> {
+        buttonLogin.setOnClickListener(v -> {
             account = editTextAccount.getText().toString();
             password = editTextPassword.getText().toString();
             if (account.isEmpty() || password.isEmpty()) {
@@ -62,22 +62,18 @@ public class FirstFragment extends Fragment {
                 return;
             }
             networkManager = new NetworkManager();
-            networkManager.loginAsync(account, password, success -> {
-                if (!success) {
-                    requireActivity()
-                            .runOnUiThread(() -> Toast.makeText(getContext(), "登录失败", Toast.LENGTH_SHORT).show());
-                    return;
+            networkManager.loginAndGetHomeworkAsync(account, password, homeworkList -> {
+                List<HomeworkInfo> items = new ArrayList<>();
+                for (HomeworkInfo hw : homeworkList) {
+                    items.add(hw);
                 }
-                networkManager.getAllHomeworkSimpleAsync(homeworkList -> {
-                    List<HomeworkInfo> items = new ArrayList<>();
-                    for (HomeworkInfo hw : homeworkList) {
-                        items.add(hw);
+                requireActivity().runOnUiThread(() -> {
+                    homeworkItemList.clear();
+                    homeworkItemList.addAll(items);
+                    homeworkAdapter.notifyDataSetChanged();
+                    if (!items.isEmpty() && "登录失败".equals(items.get(0).homeworkStatus)) {
+                        Toast.makeText(getContext(), "登录失败", Toast.LENGTH_SHORT).show();
                     }
-                    requireActivity().runOnUiThread(() -> {
-                        homeworkItemList.clear();
-                        homeworkItemList.addAll(items);
-                        homeworkAdapter.notifyDataSetChanged();
-                    });
                 });
             });
         });
