@@ -45,7 +45,7 @@ public class HomeworkWidgetProvider extends AppWidgetProvider {
             if (appWidgetId != -1) {
                 // 按钮被点击时，先将按钮文字改为'test'
                 RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_homework);
-                views.setTextViewText(R.id.btn_refresh, "test");
+                views.setTextViewText(R.id.btn_refresh, "fetching...");
                 AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
                 // 然后再异步获取作业
                 fetchAndUpdateHomework(context, appWidgetId);

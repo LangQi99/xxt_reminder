@@ -17,6 +17,6 @@ public class HomeworkInfo {
         this.url = url;
         this.taskrefId = taskrefId;
         this.deadline = deadline;
-        this.submitted = homeworkStatus != null && !"未提交".equals(homeworkStatus);
+        this.submitted = homeworkStatus != null && !"未提交".equals(homeworkStatus) && !"未交".equals(homeworkStatus);
     }
 }
