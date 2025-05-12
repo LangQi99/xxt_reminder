@@ -34,6 +34,8 @@ public class HomeworkWidgetProvider extends AppWidgetProvider {
             views.setRemoteAdapter(R.id.listViewHomework, serviceIntent);
 
             appWidgetManager.updateAppWidget(appWidgetId, views);
+            // 自动执行fetch逻辑
+            fetchAndUpdateHomework(context, appWidgetId);
         }
     }
 
