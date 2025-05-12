@@ -230,7 +230,7 @@ public class NetworkManager {
 
             // 分离未提交和已提交的作业
             for (HomeworkInfo info : result) {
-                if (!info.submitted) {
+                if (!info.submitted && info.deadline != null) {
                     unsubmitted.add(info);
                 } else {
                     submitted.add(info);

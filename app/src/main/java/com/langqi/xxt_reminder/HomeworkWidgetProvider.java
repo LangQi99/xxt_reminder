@@ -10,6 +10,7 @@ import com.langqi.xxt_reminder.network.NetworkManager;
 import com.langqi.xxt_reminder.model.HomeworkInfo;
 import java.util.List;
 import android.util.Log;
+import java.util.Date;
 
 public class HomeworkWidgetProvider extends AppWidgetProvider {
     public static final String ACTION_REFRESH = "com.langqi.xxt_reminder.ACTION_REFRESH";
@@ -72,7 +73,8 @@ public class HomeworkWidgetProvider extends AppWidgetProvider {
             // 只更新数据，不要再 setRemoteAdapter
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_homework);
             Log.d("HomeworkWidgetProvider", views.toString());
-            views.setTextViewText(R.id.btn_refresh, "fetched");
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm");
+            views.setTextViewText(R.id.btn_refresh, "fetched - " + sdf.format(new java.util.Date()));
             AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(appWidgetId, R.id.listViewHomework);
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
         });
