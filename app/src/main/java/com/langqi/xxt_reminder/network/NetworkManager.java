@@ -24,6 +24,8 @@ public class NetworkManager {
     private Map<String, List<Cookie>> cookieStore = new HashMap<>();
     private String cookieString = "";
     private boolean loginSuccess = false;
+    private String account;
+    private String password;
 
     public NetworkManager() {
         client = new OkHttpClient.Builder()
@@ -51,6 +53,8 @@ public class NetworkManager {
     }
 
     public void loginAsync(String account, String password, LoginCallback callback) {
+        this.account = account;
+        this.password = password;
         new Thread(() -> {
             boolean result = login(account, password);
             if (callback != null) {
@@ -137,28 +141,12 @@ public class NetworkManager {
                     }
                 }
                 String deadline = null;
-                if ("未提交".equals(homeworkStatus) && dataUrl != null) {
-                    // 再请求一次详情页获取截止时间
-                    Request detailRequest = new Request.Builder()
-                            .url(dataUrl)
-                            .header("User-Agent",
-                                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36")
-                            .header("Cookie", cookieString)
-                            .build();
-                    try (Response detailResponse = client.newCall(detailRequest).execute()) {
-                        String detailHtml = detailResponse.body().string();
-                        Document detailDoc = Jsoup.parse(detailHtml);
-                        Elements h4s = detailDoc.select("h4");
-                        if (h4s.size() > 1) {
-                            String h4Text = h4s.get(1).text();
-                            if (h4Text.length() > 5) {
-                                deadline = h4Text.substring(5);
-                            } else {
-                                deadline = h4Text;
-                            }
-                        }
-                    } catch (Exception e) {
-                        deadline = null;
+                Element spanWithAria = i.selectFirst("span[aria-label]");
+                if (spanWithAria != null) {
+                    String ariaLabel = spanWithAria.attr("aria-label");
+                    int idx = ariaLabel.indexOf("剩余时间");
+                    if (idx != -1) {
+                        deadline = ariaLabel.substring(idx + 4);
                     }
                 }
                 result.add(new HomeworkInfo(subject, homeworkName, homeworkStatus, dataUrl, taskrefId, deadline));
@@ -174,15 +162,26 @@ public class NetworkManager {
      * 新增：自动登录并获取作业列表，适用于JSESSION一次性场景
      */
     public void loginAndGetHomeworkAsync(String account, String password, HomeworkCallback callback) {
+        this.account = account;
+        this.password = password;
         new Thread(() -> {
             boolean loginResult = login(account, password);
             List<HomeworkInfo> result;
+            Log.d("NetworkManager", "loginResult=" + loginResult);
             if (loginResult) {
                 result = getAllHomeworkSimple();
+                Log.d("NetworkManager", "result=" + result.size());
             } else {
                 result = new ArrayList<>();
                 result.add(new HomeworkInfo("", "", "登录失败", "", "", ""));
             }
+            Log.d("NetworkManager", "result=" + result.size());
+            Log.d("NetworkManager", "result=" + result.get(0).homeworkStatus);
+            Log.d("NetworkManager", "result=" + result.get(0).homeworkName);
+            Log.d("NetworkManager", "result=" + result.get(0).subject);
+            Log.d("NetworkManager", "result=" + result.get(0).taskrefId);
+            Log.d("NetworkManager", "result=" + result.get(0).deadline);
+            Log.d("NetworkManager", "callback=" + callback);
             if (callback != null) {
                 callback.onHomeworkResult(result);
             }

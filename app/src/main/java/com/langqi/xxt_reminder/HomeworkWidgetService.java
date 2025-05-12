@@ -7,6 +7,7 @@ import android.widget.RemoteViewsService;
 import com.langqi.xxt_reminder.model.HomeworkInfo;
 import java.util.ArrayList;
 import java.util.List;
+import android.util.Log;
 
 public class HomeworkWidgetService extends RemoteViewsService {
     @Override
@@ -26,12 +27,14 @@ public class HomeworkWidgetService extends RemoteViewsService {
 
         @Override
         public void onCreate() {
+            Log.d("HomeworkWidgetService", "onCreate");
             data.clear();
             data.addAll(homeworkList);
         }
 
         @Override
         public void onDataSetChanged() {
+            Log.d("HomeworkWidgetService", "onDataSetChanged");
             data.clear();
             data.addAll(homeworkList);
         }
@@ -48,20 +51,24 @@ public class HomeworkWidgetService extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int position) {
+            Log.d("HomeworkWidgetService", "getViewAt: " + position + ", data.size=" + data.size());
             HomeworkInfo hw = data.get(position);
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.item_widget_homework);
             rv.setTextViewText(R.id.textViewSubject, hw.subject == null ? "" : hw.subject);
             rv.setTextViewText(R.id.textViewHomeworkName, hw.homeworkName == null ? "" : hw.homeworkName);
-            rv.setTextViewText(R.id.textViewStatus, hw.homeworkStatus == null ? "" : hw.homeworkStatus);
-            if (hw.deadline != null && !hw.deadline.isEmpty()) {
-                rv.setTextViewText(R.id.textViewDeadline, "截止时间: " + hw.deadline);
-            } else {
-                rv.setTextViewText(R.id.textViewDeadline, "");
-            }
-            if (hw.submitted) {
+            String statusText = hw.homeworkStatus == null ? "" : hw.homeworkStatus;
+            if (!hw.submitted && hw.deadline != null && !hw.deadline.isEmpty()) {
+                rv.setImageViewResource(R.id.imageViewStatus, R.drawable.ic_warning_yellow_24dp);
+            } else if (hw.submitted) {
                 rv.setImageViewResource(R.id.imageViewStatus, R.drawable.ic_check_circle_green_24dp);
             } else {
                 rv.setImageViewResource(R.id.imageViewStatus, R.drawable.ic_error_red_24dp);
+            }
+            rv.setTextViewText(R.id.textViewStatus, statusText);
+            if (hw.deadline != null && !hw.deadline.isEmpty() && !hw.submitted) {
+                rv.setTextViewText(R.id.textViewDeadline, hw.deadline);
+            } else {
+                rv.setTextViewText(R.id.textViewDeadline, "");
             }
             return rv;
         }

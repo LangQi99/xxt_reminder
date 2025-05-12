@@ -10,12 +10,13 @@ import com.langqi.xxt_reminder.network.NetworkManager;
 import com.langqi.xxt_reminder.model.HomeworkInfo;
 import java.util.List;
 import android.util.Log;
+
 public class HomeworkWidgetProvider extends AppWidgetProvider {
     public static final String ACTION_REFRESH = "com.langqi.xxt_reminder.ACTION_REFRESH";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        Log.d("HomeworkWidgetProvider", "onUpdate"+appWidgetIds.length);
+        Log.d("HomeworkWidgetProvider", "onUpdate" + appWidgetIds.length);
         for (int appWidgetId : appWidgetIds) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_homework);
 
@@ -23,7 +24,8 @@ public class HomeworkWidgetProvider extends AppWidgetProvider {
             Intent intent = new Intent(context, HomeworkWidgetProvider.class);
             intent.setAction(ACTION_REFRESH);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, appWidgetId, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, appWidgetId, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
             views.setOnClickPendingIntent(R.id.btn_refresh, pendingIntent);
 
             // 设置ListView的RemoteAdapter
@@ -36,7 +38,7 @@ public class HomeworkWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("HomeworkWidgetProvider", "onReceive"+intent.getAction());
+        Log.d("HomeworkWidgetProvider", "onReceive" + intent.getAction());
         super.onReceive(context, intent);
         if (ACTION_REFRESH.equals(intent.getAction())) {
             int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
@@ -52,22 +54,27 @@ public class HomeworkWidgetProvider extends AppWidgetProvider {
     }
 
     private void fetchAndUpdateHomework(Context context, int appWidgetId) {
-        Log.d("HomeworkWidgetProvider", "fetchAndUpdateHomework"+appWidgetId+" "+context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).getString("account", ""));
+        Log.d("HomeworkWidgetProvider", "fetchAndUpdateHomework" + appWidgetId + " "
+                + context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).getString("account", ""));
         String account = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).getString("account", "");
         String password = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE).getString("password", "");
         NetworkManager nm = new NetworkManager();
         nm.loginAndGetHomeworkAsync(account, password, homeworkList -> {
+            Log.d("HomeworkWidgetProvider", "fetchAndUpdateHomework" + appWidgetId + " "
+                    + homeworkList.size());
             // 更新RemoteViewsService的数据
             HomeworkWidgetService.homeworkList.clear();
             if (homeworkList != null) {
                 HomeworkWidgetService.homeworkList.addAll(homeworkList);
             }
+            Log.d("HomeworkWidgetProvider", "fetchAndUpdateHomework======" + appWidgetId + " "
+                    + HomeworkWidgetService.homeworkList.size());
+            // 只更新数据，不要再 setRemoteAdapter
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_homework);
-            Intent serviceIntent = new Intent(context, HomeworkWidgetService.class);
-            views.setRemoteAdapter(R.id.listViewHomework, serviceIntent);
-            views.setTextViewText(R.id.btn_refresh, "test");
+            Log.d("HomeworkWidgetProvider", views.toString());
+            views.setTextViewText(R.id.btn_refresh, "fetched");
             AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(appWidgetId, R.id.listViewHomework);
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
         });
     }
-} 
+}
